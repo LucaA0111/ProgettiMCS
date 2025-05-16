@@ -1,4 +1,6 @@
 from dctFunction import compare_dct
+from verify_dct import verify_dct2
+from verify_dct import verify_dct1
 
 
 def main():
@@ -14,4 +16,10 @@ def main():
 
 # Esegui il programma
 if __name__ == "__main__":
-    main()
+    if verify_dct1():
+        if verify_dct2():
+            main()
+        else:
+            print("Errore: La funzione DCT2 non ha superato la verifica.")
+    else:
+        print("Errore: La funzione DCT1 non ha superato la verifica.")

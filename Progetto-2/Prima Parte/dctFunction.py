@@ -1,31 +1,54 @@
 import numpy as np
-import scipy.fftpack as fft
 import matplotlib.pyplot as plt
 import time
+from scipy.fftpack import dct
+
+#TODO: arrotondamenti dct2 e dct1
+def compute_D(N):
+    alpha_vect = np.zeros(N)
+    alpha_vect[0] = 1 / np.sqrt(N)
+    alpha_vect[1:] = np.sqrt(2 / N)
+
+    D = np.zeros((N, N))
+    for k in range(N):
+        for i in range(N):
+            D[k, i] = alpha_vect[k] * np.cos((k * np.pi * (2 * i + 1)) / (2 * N))
+
+    return D
+
+
+def dct1_manual(row):
+    N = len(row)
+    D = compute_D(N)
+    return np.dot(D, row)
 
 # Funzione per calcolare la DCT2 manuale
 def dct2_manual(f_mat):
     N = f_mat.shape[0]
-    D = np.zeros((N, N))
-    for k in range(N):
-        for n in range(N):
-            D[k, n] = np.cos(np.pi * (n + 0.5) * k / N)
+    # Calcolo della matrice DCT
+    D = compute_D(N)
 
-    # DCT1 per le colonne
-    c_mat = f_mat.copy()
-    for j in range(N):
-        c_mat[:, j] = np.dot(D, c_mat[:, j])
+    # Creazione della matrice di risultato
+    c_mat = np.copy(f_mat)
 
-    # DCT1 per le righe
-    for j in range(N):
-        c_mat[j, :] = np.dot(D, c_mat[j, :].T).T
+    # Fase 1: DCT lungo le colonne
+    c_mat = np.dot(D, c_mat)
+
+    # Fase 2: DCT lungo le righe
+    c_mat = np.dot(D, c_mat.T).T
+
 
     return c_mat
 
-
 # Funzione per calcolare la DCT2 usando scipy (DCT veloce)
 def dct2_fast(f_mat):
-    return fft.dct(fft.dct(f_mat.T, type=2).T, type=2)
+    # DCT lungo le colonne (axis=0)
+    temp = dct(f_mat, type=2, norm='ortho', axis=0)
+
+    # DCT lungo le righe (axis=1)
+    c_mat = dct(temp, type=2, norm='ortho', axis=1)
+
+    return c_mat
 
 # Funzione per confrontare la DCT manuale e la DCT veloce
 def compare_dct(n_values):
