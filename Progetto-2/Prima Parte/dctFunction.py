@@ -1,85 +1,102 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from scipy.fftpack import dct
+from scipy.fft import dct, idct
 
-#TODO: arrotondamenti dct2 e dct1
-def compute_D(N):
-    alpha_vect = np.zeros(N)
-    alpha_vect[0] = 1 / np.sqrt(N)
-    alpha_vect[1:] = np.sqrt(2 / N)
 
-    D = np.zeros((N, N))
-    for k in range(N):
+class DCT2:
+
+    def __init__(self):
+        pass
+
+    def compute_D(self, N):
+
+        D = np.zeros((N, N))  # inizializza matrice D a zeri
+        for k in range(N):
+            if k == 0:
+                coef = np.sqrt(1 / N)  # coefficiente di normalizzazione per k = 0
+            else:
+                coef = np.sqrt(2 / N)  # coefficiente di normalizzazione per k > 0
+
+            for j in range(N):
+                # Calcolo dell'elemento (k, j) della matrice D secondo la formula della DCT
+                D[k, j] = coef * np.cos((np.pi * k * (2 * j + 1)) / (2 * N))
+
+        return D
+
+    def dct2_manual(self, f_mat):
+
+        N = f_mat.shape[0]
+        D = self.compute_D(N)  # calcola la matrice D
+
+        # Copia della matrice di input
+        c_mat = f_mat.copy()
+
+        # Applica la DCT alle colonne: c = D @ f
+        for j in range(N):
+            c_mat[:, j] = D @ c_mat[:, j]  # moltiplicazione matrice-vettore colonna per ogni colonna
+
+        # Applica la DCT alle righe: c = c @ D^T
         for i in range(N):
-            D[k, i] = alpha_vect[k] * np.cos((k * np.pi * (2 * i + 1)) / (2 * N))
+            c_mat[i, :] = (D @ c_mat[i, :].T).T  # moltiplicazione matrice-vettore riga
 
-    return D
+        return c_mat
 
+    def dct2_fast(self, f_mat):
 
-def dct1_manual(row):
-    N = len(row)
-    D = compute_D(N)
-    return np.dot(D, row)
+        # Applica DCT lungo l’asse 0 (righe), poi lungo l’asse 1 (colonne), con normalizzazione ortogonale
+        return dct(dct(f_mat, axis=0, norm='ortho'), axis=1, norm='ortho')
 
-# Funzione per calcolare la DCT2 manuale
-def dct2_manual(f_mat):
-    N = f_mat.shape[0]
-    # Calcolo della matrice DCT
-    D = compute_D(N)
+    def verify_dct(self):
 
-    # Creazione della matrice di risultato
-    c_mat = np.copy(f_mat)
+        # Blocco di test 8x8 fornito nel progetto
+        test_block = np.array([
+            [231, 32, 233, 161, 24, 71, 140, 245],
+            [247, 40, 248, 245, 124, 204, 36, 107],
+            [234, 202, 245, 167, 9, 217, 239, 173],
+            [193, 190, 100, 167, 43, 180, 8, 70],
+            [11, 24, 210, 177, 81, 243, 8, 112],
+            [97, 195, 203, 47, 125, 114, 165, 181],
+            [193, 70, 174, 167, 41, 30, 127, 245],
+            [87, 149, 57, 192, 65, 129, 178, 228]
+        ])
 
-    # Fase 1: DCT lungo le colonne
-    c_mat = np.dot(D, c_mat)
+        # Prima riga per il test 1D
+        first_row = test_block[0, :]
 
-    # Fase 2: DCT lungo le righe
-    c_mat = np.dot(D, c_mat.T).T
+        # Applica la DCT1D alla prima riga con la matrice D
+        D = self.compute_D(8)
+        dct_row = D @ first_row  # moltiplicazione matrice D per vettore riga
 
+        # Risultati attesi dal testo, definito dalla consegna da controllora solo la prima riga
+        expected_dct_row = np.array([
+            4.01e+02, 6.60e+00, 1.09e+02, -1.12e+02,
+            6.54e+01, 1.21e+02, 1.16e+02, 2.88e+01
+        ])
 
-    return c_mat
+        # Esegue DCT2 manuale sul blocco
+        dct2_result = self.dct2_manual(test_block)
 
-# Funzione per calcolare la DCT2 usando scipy (DCT veloce)
-def dct2_fast(f_mat):
-    # DCT lungo le colonne (axis=0)
-    temp = dct(f_mat, type=2, norm='ortho', axis=0)
+        #TODO: Sistemare stampe
+        # Output del confronto tra risultato ottenuto e atteso
+        print("Validazione DCT 1D:")
+        print("Risultato ottenuto:")
+        print(dct_row)
+        print("\nRisultato atteso:")
+        print(expected_dct_row)
+        print("\nDifferenza assoluta:")
+        print(np.abs(dct_row - expected_dct_row))
 
-    # DCT lungo le righe (axis=1)
-    c_mat = dct(temp, type=2, norm='ortho', axis=1)
+        # Stampa i primi coefficienti della DCT2 manuale
+        print("\nDCT2 manuale (prime due righe):")
+        print(dct2_result[0, :])
+        print(dct2_result[1, :])
 
-    return c_mat
+        # Verifica consistenza con la DCT2 veloce di SciPy
+        dct2_scipy = self.dct2_fast(test_block)
 
-# Funzione per confrontare la DCT manuale e la DCT veloce
-def compare_dct(n_values):
-    manual_times = []
-    fast_times = []
+        print("\nDCT2 con SciPy (prime due righe):")
+        print(dct2_scipy[0, :])
+        print(dct2_scipy[1, :])
 
-    for N in n_values:
-        # Crea una matrice f_mat casuale NxN
-        f_mat = np.random.rand(N, N)
-
-        # Misura il tempo per la DCT manuale
-        start_time = time.time()
-        dct_manual = dct2_manual(f_mat)
-        manual_time = time.time() - start_time
-        manual_times.append(manual_time)
-
-        # Misura il tempo per la DCT veloce
-        start_time = time.time()
-        dct_fast = dct2_fast(f_mat)
-        fast_time = time.time() - start_time
-        fast_times.append(fast_time)
-
-    # Grafico dei tempi in scala semilogaritmica
-    plt.figure(figsize=(8, 6))
-    plt.plot(n_values, manual_times, marker='o', label='DCT Manuale', color='b')
-    plt.plot(n_values, fast_times, marker='x', label='DCT Veloce', color='r')
-    plt.xlabel('Dimensione della matrice (N)')
-    plt.ylabel('Tempo di esecuzione (secondi)')
-    plt.title('Confronto tra DCT Manuale e DCT Veloce')
-    plt.yscale('log')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-
+        # Nota: Le differenze nei risultati possono dipendere dalle normalizzazioni diverse
