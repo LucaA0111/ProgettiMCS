@@ -68,35 +68,29 @@ class DCT2:
         D = self.compute_D(8)
         dct_row = D @ first_row  # moltiplicazione matrice D per vettore riga
 
-        # Risultati attesi dal testo, definito dalla consegna da controllora solo la prima riga
-        expected_dct_row = np.array([
-            4.01e+02, 6.60e+00, 1.09e+02, -1.12e+02,
-            6.54e+01, 1.21e+02, 1.16e+02, 2.88e+01
-        ])
+        expected_dct_row = np.array([4.01e+02, 6.60e+00, 1.09e+02, -1.12e+02,6.54e+01, 1.21e+02, 1.16e+02, 2.88e+01])
 
-        # Esegue DCT2 manuale sul blocco
+        # Esegue DCT2 manuale sul blocco di test
         dct2_result = self.dct2_manual(test_block)
+        # Esegue DCT2 veloce di SciPy sul blocco di test
+        dct2_scipy = self.dct2_fast(test_block)
 
-        #TODO: Sistemare stampe
-        # Output del confronto tra risultato ottenuto e atteso
-        print("Validazione DCT 1D:")
+
+        print("\n➡VERIFICA DCT 1D:\n")
         print("Risultato ottenuto:")
         print(dct_row)
         print("\nRisultato atteso:")
         print(expected_dct_row)
         print("\nDifferenza assoluta:")
         print(np.abs(dct_row - expected_dct_row))
+        print("------")
 
-        # Stampa i primi coefficienti della DCT2 manuale
-        print("\nDCT2 manuale (prime due righe):")
-        print(dct2_result[0, :])
-        print(dct2_result[1, :])
-
-        # Verifica consistenza con la DCT2 veloce di SciPy
-        dct2_scipy = self.dct2_fast(test_block)
-
-        print("\nDCT2 con SciPy (prime due righe):")
-        print(dct2_scipy[0, :])
-        print(dct2_scipy[1, :])
+        print("\n➡VERIFICA DCT2:\n")
+        print("DCT2 manuale:\n")
+        print(dct2_result)
+        print("\nDCT2 con SciPy:")
+        print(dct2_scipy)
+        print("\nDifferenza assoluta:")
+        print(np.abs(dct2_result - dct2_result))
 
         # Nota: Le differenze nei risultati possono dipendere dalle normalizzazioni diverse
