@@ -1,6 +1,4 @@
-# Progetto 2 - Compressione di Immagini tramite la DCT
-
-## Corso: Metodi del Calcolo Scientifico - AA 2024-2025
+# Progetto 2 - Compressione di Immagini tramite la DCT - UniMiB - AA 2024-2025
 
 ### Descrizione
 Lo scopo di questo progetto è utilizzare l'implementazione della DCT2 in un ambiente open source e studiare gli effetti di un algoritmo di compressione tipo JPEG (senza matrice di quantizzazione) su immagini in toni di grigio. Il progetto prevede sia lo sviluppo di codice che la scrittura di una relazione.
