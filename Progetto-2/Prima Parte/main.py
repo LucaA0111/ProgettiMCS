@@ -5,10 +5,39 @@ import os
 from datetime import datetime
 from dctFunction import DCT2
 
+"""
+Modulo principale per il benchmarking delle implementazioni della trasformata DCT2.
+
+Importa:
+- numpy per la manipolazione matriciale,
+- matplotlib per la visualizzazione dei dati,
+- time per misurazioni temporali,
+- os e datetime per gestione file e timestamp,
+- DCT2 dalla libreria esterna dctFunction per le trasformate DCT2.
+
+La classe Main esegue test di performance (benchmark) confrontando l'implementazione manuale
+e quella veloce (SciPy), visualizza i risultati e salva i grafici in cartelle con timestamp.
+
+Esecuzione:
+Esegue una verifica dei risultati DCT2, quindi un benchmark per varie dimensioni di matrici,
+infine mostra e salva grafici con i tempi di esecuzione e il rapporto di velocità.
+"""
 
 class Main:
+    """
+        Classe principale per gestire il benchmarking e la visualizzazione delle prestazioni
+        delle implementazioni della trasformata discreta del coseno bidimensionale (DCT2).
+
+        Attributi:
+            transformer (DCT2): istanza della classe DCT2 per calcolare le trasformate.
+            output_dir (str): percorso della cartella dove vengono salvati i grafici con timestamp.
+    """
 
     def __init__(self):
+        """
+            Inizializza la classe Main creando un'istanza di DCT2 e la cartella di output
+            per i risultati, nominata con il timestamp corrente (formato YYYYMMDD_HHMMSS).
+        """
         self.transformer = DCT2()
 
         # Crea la cartella per salvare i risultati con timestamp
@@ -17,6 +46,18 @@ class Main:
         os.makedirs(self.output_dir, exist_ok=True)
 
     def benchmark(self, sizes):
+        """
+            Esegue il benchmark del calcolo della DCT2 su matrici quadrate di dimensioni specificate.
+
+            Parametri:
+                sizes (list of int): lista delle dimensioni N delle matrici NxN da testare.
+
+            Ritorna:
+                dict: dizionario con i seguenti campi:
+                    - 'sizes': dimensioni testate,
+                    - 'manual_times': tempi di esecuzione dell'implementazione manuale,
+                    - 'fast_times': tempi di esecuzione dell'implementazione veloce (SciPy).
+        """
         results = {
             'sizes': sizes,
             'manual_times': [],
@@ -52,6 +93,19 @@ class Main:
         return results
 
     def plot_results(self, results):
+        """
+            Genera e salva grafici per visualizzare i risultati del benchmark.
+
+            Parametri:
+                results (dict): dizionario restituito dal metodo benchmark, con tempi e dimensioni.
+
+            Funzionalità:
+                - Grafico con scala logaritmica dei tempi di esecuzione vs dimensione,
+                  includendo curve teoriche di complessità O(N³) e O(N² log N).
+                - Grafico del rapporto di velocità (manuale / veloce).
+                - Salvataggio delle immagini PNG nella cartella di output.
+        """
+
         plt.figure(figsize=(10, 6))
 
         # Grafico: tempo vs dimensione della matrice
@@ -132,6 +186,12 @@ class Main:
 
 
 if __name__ == "__main__":
+    """
+        Esecuzione principale:
+        - Verifica la correttezza della DCT2 con i test interni.
+        - Definisce una lista di dimensioni per il benchmark.
+        - Esegue il benchmark e visualizza i risultati.
+    """
     transformer = DCT2()
     main = Main()
 

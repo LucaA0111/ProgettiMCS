@@ -7,6 +7,27 @@ from library.gradient_method import gradient
 from library.conjugate_gradient_method import conjugate_gradient
 from library.plot import plot_results
 
+"""
+Script per testare e confrontare diversi metodi iterativi di risoluzione 
+di sistemi lineari Ax = b su matrici sparse lette da file.
+
+L'utente seleziona matrici e tolleranze, poi il programma esegue
+i solver Jacobi, Gauss-Seidel, Gradiente e Gradiente Coniugato su ciascuna combinazione,
+calcolando il numero di iterazioni, l'errore relativo e il tempo di esecuzione.
+
+Al termine, i risultati vengono visualizzati tramite grafici.
+
+Procedura:
+- Caricamento matrici da file in formato Matrix Market (.mtx).
+- Generazione vettore soluzione esatta x = [1, ..., 1].
+- Calcolo vettore termini noti b = A * x.
+- Esecuzione metodi iterativi con criteri di arresto basati sulla tolleranza.
+- Raccolta e stampa dei risultati.
+- Visualizzazione grafica delle metriche di confronto.
+
+Non richiede parametri di input alla chiamata, interattivo via console.
+"""
+
 matrix_files = ["spa1.mtx", "spa2.mtx", "vem1.mtx", "vem2.mtx"]
 tols = [1e-4, 1e-6, 1e-8, 1e-10]
 solvers = {

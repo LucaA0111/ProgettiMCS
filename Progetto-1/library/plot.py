@@ -3,6 +3,26 @@ import os
 from datetime import datetime
 
 def plot_results(data):
+    """
+        Crea e salva grafici relativi ai risultati delle simulazioni.
+
+        La funzione genera grafici per più metriche (iterazioni, errore relativo, tempi)
+        per ogni matrice e per ogni solver, salvandoli in una struttura di cartelle organizzata
+        per data e nome matrice.
+
+        Parameters:
+            data: dict
+                Dizionario contenente i dati delle simulazioni con la seguente struttura:
+                - 'matrices': lista di nomi file delle matrici analizzate.
+                - 'solvers': lista di nomi degli algoritmi utilizzati.
+                - 'tols': lista di tolleranze usate.
+                - 'results': dizionario con i risultati, indicizzato per matrice e tolleranza,
+                  contenente metriche e risultati dei solver.
+
+        Returns:
+            None
+        """
+
     now = datetime.now().strftime("%Y%m%d_%H%M%S")
     base_dir = os.path.join("plots", now)
     os.makedirs(base_dir, exist_ok=True)
