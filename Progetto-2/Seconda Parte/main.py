@@ -7,6 +7,24 @@ from dct_utils import compress_image
 from image_utils import show_images
 
 class App(tk.Tk):
+    """
+        GUI per la compressione di immagini BMP con DCT2.
+
+        Funzionalità:
+        - Selezione file immagine BMP in scala di grigi
+        - Inserimento dei parametri:
+            F: dimensione del blocco per la DCT (es. 8, 16)
+            d: soglia di cutoff per l'eliminazione delle frequenze (0 <= d <= 2F - 2)
+        - Compressione dell'immagine tramite DCT2
+        - Visualizzazione dell'immagine originale e compressa
+        - Salvataggio automatico del confronto
+
+        Attributi:
+            initial_dir (str): Directory predefinita per il file dialog.
+            path_var (tk.StringVar): Percorso dell'immagine selezionata.
+            f_var (tk.IntVar): Dimensione dei blocchi F.
+            d_var (tk.IntVar): Soglia di cutoff d.
+    """
     def __init__(self):
         super().__init__()
         self.title("DCT Image Compressor")
@@ -38,6 +56,10 @@ class App(tk.Tk):
         tk.Button(self, text="Comprimi", command=self.run).grid(row=3, column=1, pady=20)
 
     def browse_file(self):
+        """
+            Apre un file dialog per selezionare un'immagine BMP.
+            Aggiorna `self.path_var` con il percorso selezionato.
+        """
         path = filedialog.askopenfilename(
             initialdir=self.initial_dir,
             title="Seleziona immagine BMP",
@@ -47,6 +69,14 @@ class App(tk.Tk):
             self.path_var.set(path)
 
     def run(self):
+        """
+            Esegue il processo di compressione quando l'utente preme "Comprimi".
+            Include:
+            - Controllo dei parametri
+            - Caricamento immagine
+            - Compressione tramite `compress_image`
+            - Visualizzazione con `show_images`
+        """
         path = self.path_var.get()
         F = self.f_var.get()
         d = self.d_var.get()
