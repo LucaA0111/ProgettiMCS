@@ -1,3 +1,4 @@
+import numpy as np
 
 def jacobi(A, b, tol=1e-6, max_iter=20000):
     """

@@ -1,5 +1,5 @@
 import numpy as np
-from lower_triangular_method import lower_triangular
+from .lower_triangular_method import lower_triangular
 
 
 def gauss_seidel(A, b, tol=1e-6, max_iter=20000):
