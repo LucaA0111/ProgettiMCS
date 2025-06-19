@@ -1,7 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import time
-from scipy.fft import dct, idct
+from scipy.fft import dct
 
 
 class DCT2:
