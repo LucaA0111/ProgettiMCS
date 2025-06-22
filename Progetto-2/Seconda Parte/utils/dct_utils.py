@@ -3,19 +3,51 @@ from scipy.fft import dctn, idctn
 
 
 class DCTProcessor:
+    """
+        Classe per la compressione di immagini in scala di grigi tramite la Trasformata Coseno Discreta (DCT).
+
+        Questa classe consente di applicare la DCT bidimensionale (DCT2) a blocchi di un'immagine,
+        comprimendo l'immagine attraverso l'eliminazione di componenti ad alta frequenza.
+    """
     def __init__(self):
         pass
 
     def dct2_library(self, block):
-        """DCT2 usando la libreria scipy"""
+        """
+            Applica la DCT bidimensionale (DCT2) a un blocco usando scipy.
+
+            Parametri:
+                block (numpy.ndarray): Il blocco di immagine da trasformare.
+
+            Ritorna:
+                numpy.ndarray: Il blocco trasformato nel dominio delle frequenze.
+        """
         return dctn(block, type=2, norm='ortho')
 
     def idct2_library(self, block):
-        """IDCT2 usando la libreria scipy"""
+        """
+            Applica l'inversa della DCT bidimensionale (IDCT2) a un blocco usando scipy.
+
+            Parametri:
+                block (numpy.ndarray): Il blocco nel dominio delle frequenze da riconvertire.
+
+            Ritorna:
+                numpy.ndarray: Il blocco ricostruito nel dominio spaziale.
+        """
         return idctn(block, type=2, norm='ortho')
 
     def compress_block(self, block, d):
-        """Comprime un singolo blocco usando DCT"""
+        """
+            Comprime un singolo blocco di immagine applicando la DCT e azzerando
+            le frequenze con indice k + l >= d.
+
+            Parametri:
+                block (numpy.ndarray): Il blocco di immagine da comprimere.
+                d (int): Soglia per la ritenzione dei coefficienti DCT (k + l < d).
+
+            Ritorna:
+                numpy.ndarray: Il blocco compresso e ricostruito.
+        """
         F = block.shape[0]
 
         # Applica DCT2
@@ -37,7 +69,21 @@ class DCTProcessor:
         return reconstructed.astype(np.uint8)
 
     def compress_image(self, image, F, d, progress_callback=None):
-        """Comprime l'intera immagine"""
+        """
+            Comprime l'intera immagine suddividendola in blocchi di dimensione F x F
+            e applicando la compressione DCT su ciascun blocco.
+
+            Parametri:
+                image (numpy.ndarray): L'immagine da comprimere (grayscale).
+                F (int): Dimensione dei blocchi quadrati.
+                d (int): Soglia di compressione (frequenze con k + l >= d saranno eliminate).
+                progress_callback (funzione, opzionale): Funzione per aggiornare la barra di progresso.
+
+            Ritorna:
+                tuple:
+                    - numpy.ndarray: L'immagine compressa.
+                    - dict: Statistiche di compressione (MSE, PSNR, rapporto di compressione).
+        """
         height, width = image.shape
 
         # Calcola quanti blocchi completi possiamo ottenere
@@ -79,7 +125,23 @@ class DCTProcessor:
         return compressed_image, stats
 
     def calculate_stats(self, original, compressed, F, d):
-        """Calcola le statistiche di compressione"""
+        """
+            Calcola le statistiche di compressione tra l'immagine originale e quella compressa.
+
+            Parametri:
+                original (numpy.ndarray): L'immagine originale.
+                compressed (numpy.ndarray): L'immagine compressa.
+                F (int): Dimensione dei blocchi.
+                d (int): Soglia di compressione (frequenze con k + l >= d sono eliminate).
+
+            Ritorna:
+                dict: Dizionario contenente:
+                    - mse: Errore quadratico medio (Mean Squared Error).
+                    - psnr: Rapporto segnale-rumore di picco (Peak Signal-to-Noise Ratio).
+                    - kept_coeffs: Numero di coefficienti DCT mantenuti.
+                    - total_coeffs: Numero totale di coefficienti per blocco.
+                    - compression_ratio: Percentuale di coefficienti mantenuti.
+        """
         mse = np.mean((original.astype(np.float64) - compressed.astype(np.float64)) ** 2)
         psnr = 20 * np.log10(255 / np.sqrt(mse)) if mse > 0 else float('inf')
 

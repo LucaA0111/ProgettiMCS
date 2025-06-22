@@ -10,6 +10,10 @@ from utils.utils import Utils
 
 
 class DCTImageCompressor:
+    """
+        Interfaccia grafica per la compressione di immagini BMP in scala di grigi
+        utilizzando la Trasformata Discreta del Coseno (DCT).
+    """
     def __init__(self, root):
         self.root = root
         self.root.title("Compressore Immagini DCT")
@@ -29,6 +33,18 @@ class DCTImageCompressor:
         self.setup_ui()
 
     def setup_ui(self):
+        """
+            Configura e costruisce l'interfaccia grafica dell'applicazione.
+
+            Crea:
+            - Frame per i controlli.
+            - Input per i parametri F e d.
+            - Pulsanti per selezionare l'immagine e avviare la compressione.
+            - Barra di progresso.
+            - Pannello per le informazioni.
+            - Canvas per visualizzare immagine originale e immagine compressa.
+        """
+
         # Frame principale
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
@@ -38,7 +54,6 @@ class DCTImageCompressor:
         self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(1, weight=1)
 
-        # Frame per i controlli
         control_frame = ttk.LabelFrame(main_frame, text="Controlli", padding="10")
         control_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N), padx=(0, 10))
 
@@ -98,7 +113,12 @@ class DCTImageCompressor:
         ttk.Label(image_frame, text="Immagine Compressa").grid(row=0, column=1, pady=5)
 
     def update_d_limit(self, *args):
-        """Aggiorna il limite massimo di d in base a F"""
+        """
+            Aggiorna dinamicamente il limite massimo selezionabile per la soglia d
+            in base al valore corrente di F.
+
+            Impedisce che il valore di d superi 2*F - 2.
+        """
         try:
             F = int(self.f_var.get())
             max_d = 2 * F - 2
@@ -109,7 +129,14 @@ class DCTImageCompressor:
             pass
 
     def select_image(self):
-        """Seleziona un'immagine BMP"""
+        """
+            Apre una finestra di dialogo per selezionare un file BMP.
+
+            Carica l'immagine selezionata in scala di grigi e la visualizza
+            nel canvas dedicato all'immagine originale.
+
+            Mostra inoltre informazioni sul file caricato.
+        """
         default_path = Utils.IMAGE_DIR
 
         if not os.path.exists(default_path):
@@ -140,18 +167,30 @@ class DCTImageCompressor:
                 messagebox.showerror("Errore", f"Errore nel caricamento dell'immagine: {str(e)}")
 
     def update_info(self, text):
-        """Aggiunge testo al pannello informazioni"""
+        """
+            Aggiorna il pannello informazioni aggiungendo un nuovo messaggio.
+        """
         self.info_text.insert(tk.END, text)
         self.info_text.see(tk.END)
         self.info_text.update()
 
     def update_progress(self, value):
-        """Aggiorna la barra di progresso"""
+        """
+            Aggiorna la barra di progresso con il valore corrente.
+        """
         self.progress_var.set(value)
         self.root.update_idletasks()
 
     def compress_image(self):
-        """Comprime l'intera immagine"""
+        """
+            Esegue la compressione DCT dell'immagine caricata.
+
+            Controlla che un'immagine sia stata selezionata.
+            Applica la compressione utilizzando il DCTProcessor.
+            Aggiorna la barra di progresso durante l'elaborazione.
+            Visualizza l'immagine compressa e le statistiche di compressione.
+            Salva automaticamente l'immagine di confronto.
+        """
         if self.original_image is None:
             messagebox.showwarning("Attenzione", "Seleziona prima un'immagine")
             return
@@ -187,13 +226,18 @@ class DCTImageCompressor:
             self.update_info(f"Errore: {str(e)}\n")
 
     def save_comparison(self):
-        """Salva il confronto tra immagine originale e compressa"""
+        """
+            Salva un'immagine di confronto tra l'originale e la versione compressa.
+
+            L'immagine viene salvata nella directory definita in Utils.OUTPUT_DIR
+            con un nome che include un timestamp per evitare sovrascritture.
+        """
         try:
             # Crea la cartella se non esiste
             output_dir = Utils.OUTPUT_DIR
             os.makedirs(output_dir, exist_ok=True)
 
-            # Nome file con timestamp
+            # Nome file
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"comparison_{timestamp}.png"
             filepath = os.path.join(output_dir, filename)

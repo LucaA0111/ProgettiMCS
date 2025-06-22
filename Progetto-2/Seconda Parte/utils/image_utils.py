@@ -4,11 +4,21 @@ import matplotlib.pyplot as plt
 
 
 class ImageUtils:
+    """
+        Classe di utilità per la gestione e la visualizzazione di immagini
+        in interfacce grafiche Tkinter e per il salvataggio di confronti visivi.
+    """
     def __init__(self):
         pass
 
     def display_image(self, image, canvas):
-        """Visualizza un'immagine nel canvas specificato"""
+        """
+            Visualizza un'immagine ridimensionata all'interno di un canvas Tkinter.
+
+            Parametri:
+                image (numpy.ndarray): L'immagine da visualizzare.
+                canvas (tk.Canvas): Il canvas su cui disegnare l'immagine.
+        """
         height, width = image.shape
         max_size = 280
 
@@ -34,7 +44,14 @@ class ImageUtils:
         canvas.image = photo
 
     def save_comparison(self, original, compressed, filepath):
-        """Salva un confronto side-by-side delle immagini"""
+        """
+            Salva un confronto affiancato tra l'immagine originale e quella compressa.
+
+            Parametri:
+                original (numpy.ndarray): L'immagine originale.
+                compressed (numpy.ndarray): L'immagine compressa.
+                filepath (str): Il percorso completo dove salvare l'immagine di confronto.
+        """
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
         # Immagine originale
