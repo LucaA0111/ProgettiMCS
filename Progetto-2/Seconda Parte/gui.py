@@ -24,10 +24,8 @@ class DCTImageCompressor:
         self.compressed_image = None
         self.image_path = None
 
-        # Processore DCT
         self.dct_processor = DCTProcessor()
 
-        # Utilità per immagini
         self.image_utils = ImageUtils()
 
         self.setup_ui()

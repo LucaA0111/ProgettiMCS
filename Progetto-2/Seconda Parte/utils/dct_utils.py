@@ -53,7 +53,7 @@ class DCTProcessor:
         # Applica DCT2
         dct_coeffs = self.dct2_library(block.astype(np.float64))
 
-        # Elimina le frequenze con k + l >= d
+        # Rimuovo frequenze con k + l >= d
         for k in range(F):
             for l in range(F):
                 if k + l >= d:
@@ -62,7 +62,6 @@ class DCTProcessor:
         # Applica IDCT2
         reconstructed = self.idct2_library(dct_coeffs)
 
-        # Arrotonda e limita i valori
         reconstructed = np.round(reconstructed)
         reconstructed = np.clip(reconstructed, 0, 255)
 
@@ -86,7 +85,6 @@ class DCTProcessor:
         """
         height, width = image.shape
 
-        # Calcola quanti blocchi completi possiamo ottenere
         blocks_h = height // F
         blocks_w = width // F
 
@@ -100,7 +98,6 @@ class DCTProcessor:
 
         for i in range(blocks_h):
             for j in range(blocks_w):
-                # Estrai il blocco
                 start_row = i * F
                 end_row = start_row + F
                 start_col = j * F
@@ -108,10 +105,8 @@ class DCTProcessor:
 
                 block = image[start_row:end_row, start_col:end_col]
 
-                # Comprimi il blocco
                 compressed_block = self.compress_block(block, d)
 
-                # Inserisci il blocco compresso nell'immagine risultante
                 compressed_image[start_row:end_row, start_col:end_col] = compressed_block
 
                 # Aggiorna progresso

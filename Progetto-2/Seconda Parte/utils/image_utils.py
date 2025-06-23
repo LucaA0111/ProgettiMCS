@@ -29,18 +29,14 @@ class ImageUtils:
             new_height = max_size
             new_width = int(width * max_size / height)
 
-        # Ridimensiona usando PIL
         pil_image = Image.fromarray(image)
         pil_image = pil_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
-        # Converti per Tkinter
         photo = ImageTk.PhotoImage(pil_image)
 
-        # Pulisci canvas e mostra immagine
         canvas.delete("all")
         canvas.create_image(150, 150, image=photo, anchor=tk.CENTER)
 
-        # Mantieni riferimento per evitare garbage collection
         canvas.image = photo
 
     def save_comparison(self, original, compressed, filepath):
